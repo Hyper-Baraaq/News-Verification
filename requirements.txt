@@ -1,0 +1,7 @@
+streamlit
+openai
+beautifulsoup4
+requests
+python-dateutil
+psycopg2
+sqlite3 
