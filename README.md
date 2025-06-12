@@ -1,0 +1,1 @@
+The URL Verification System evaluates the credibility of online content by leveraging web scraping, AI-based content analysis, and machine learning techniques. It assigns a confidence score to help users assess reliability, offering a user-friendly interface via a Chrome extension and web app.
