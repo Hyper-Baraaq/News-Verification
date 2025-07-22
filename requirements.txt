@@ -1,8 +1,6 @@
-
 streamlit
 openai
 beautifulsoup4
 requests
 python-dateutil
-psycopg2
-
+psycopg2-binary
