@@ -3,8 +3,8 @@ import os
 # Configuration dictionary for all settings
 CONFIG = {
     # API settings
-    "openai_api_key": os.getenv("OPENAI_API_KEY", "sk-proj-ytbK-ONCDXJWW0LsXrd5k5Ui2Z4QBvKr2hpoGBwQdeDINyL00WpeGcHip9XtUJhJBKlC0DMSPDT3BlbkFJBIsYb7jiIUpvvYbB4LXlI4-l8L3o5p2PB6xOZTliObOJBTFkxvbUaPlYYqIuN8"),
-    "perplexity_api_key": os.getenv("PERPLEXITY_API_KEY", "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"),
+    "openai_api_key": os.getenv("OPENAI_API_KEY", "abc"),
+    "perplexity_api_key": os.getenv("PERPLEXITY_API_KEY", "xyz"),
     "perplexity_api_url": "https://api.perplexity.ai/chat/completions",
 
     # Database settings
