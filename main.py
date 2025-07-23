@@ -147,13 +147,31 @@ def display_results(verification_result: Dict[str, Any]):
                     st.subheader("Extracted Metadata")
                     st.code(extracted[:metadata_end])
                     st.subheader("Key Claims and Facts")
-                    st.text_area("", extracted[metadata_end:1500] + "...", height=300)
+                    st.text_area(
+                        label="Extracted Text",
+                        value=extracted[:1500] + "...",
+                        height=300,
+                        label_visibility="collapsed"
+                    )
+
                 else:
                     st.subheader("Extracted Content")
-                    st.text_area("", extracted[:1500] + "...", height=300)
+                    st.text_area(
+                        label="Extracted Text",
+                        value=extracted[:1500] + "...",
+                        height=300,
+                        label_visibility="collapsed"
+                    )
+
             else:
                 st.subheader("Extracted Content")
-                st.text_area("", extracted[:1500] + "...", height=300)
+                st.text_area(
+                    label="Extracted Text",
+                    value=extracted[:1500] + "...",
+                    height=300,
+                    label_visibility="collapsed"
+                )
+
         
         st.subheader("Credibility Assessment")
         st.write(verification_result['credibility_assessment'])
