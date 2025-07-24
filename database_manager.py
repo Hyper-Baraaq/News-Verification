@@ -78,6 +78,15 @@ class DatabaseManager:
             )
             """
         )
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS simple_url_cache (
+                url TEXT PRIMARY KEY,
+                result_json TEXT,
+                timestamp TEXT,
+                processing_time REAL
+            )
+        """)
+
 
     def ensure_column_exists(self, table_name: str, column_name: str, column_type: str = "TEXT"):
         cursor = self.conn.cursor()
@@ -130,7 +139,33 @@ class DatabaseManager:
         finally:
             conn.close()
 
+    def get_simple_cached_result(self, url: str) -> Optional[Dict[str, Any]]:
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT result_json FROM simple_url_cache WHERE url = ?", (url,))
+            row = cursor.fetchone()
+            if row:
+                return json.loads(row[0])
+            return None
+        except Exception as e:
+            print(f"Simple cache read error: {e}")
+            return None
 
+    def insert_simple_cached_result(self, url: str, result: Dict[str, Any], processing_time: float):
+        try:
+            cursor = self.conn.cursor()
+            result_json = json.dumps(result)
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO simple_url_cache (url, result_json, timestamp, processing_time)
+                VALUES (?, ?, ?, ?)
+                """,
+                (url, result_json, timestamp, processing_time)
+            )
+            self.conn.commit()
+        except Exception as e:
+            print(f"Simple cache write error: {e}")
 
     def insert_cached_result(self, result: Dict[str, Any], processing_time: float):
         """Insert or update a verification result in the url_verification_cache table"""
