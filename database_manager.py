@@ -77,11 +77,9 @@ class DatabaseManager:
             self.conn.commit()
 
     def get_cached_result(self, url: str) -> Optional[Dict[str, Any]]:
-        """Fetch cached verification result by exact full URL match"""
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-
             cursor.execute(
                 """
                 SELECT * FROM url_verification_cache
@@ -90,12 +88,12 @@ class DatabaseManager:
                 (url,)
             )
             result = cursor.fetchone()
-
+    
             if result:
                 columns = [desc[0] for desc in cursor.description]
                 result_dict = dict(zip(columns, result))
-
-                # Update access count and last accessed time
+    
+                # Update access stats
                 cursor.execute(
                     """
                     UPDATE url_verification_cache
@@ -107,20 +105,20 @@ class DatabaseManager:
                     (datetime.now(), url)
                 )
                 conn.commit()
-
-                # Parse JSON fields
+    
+                # Parse JSON
                 for field in ['fact_verification_results', 'sources_used', 'metadata_assessment']:
                     if result_dict.get(field):
                         result_dict[field] = json.loads(result_dict[field])
-
+    
                 return result_dict
-
             return None
         except Exception as e:
-            print(f"Cache retrieval error: {e}")
+            print(f"Cache lookup error: {e}")
             return None
         finally:
             conn.close()
+
 
 
     def insert_cached_result(self, result: Dict[str, Any], processing_time: float):
