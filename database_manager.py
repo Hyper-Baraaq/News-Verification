@@ -68,6 +68,17 @@ class DatabaseManager:
         )
         self.conn.commit()
 
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS simple_url_cache (
+                url TEXT PRIMARY KEY,
+                result_json TEXT,
+                timestamp TEXT,
+                processing_time REAL
+            )
+            """
+        )
+
     def ensure_column_exists(self, table_name: str, column_name: str, column_type: str = "TEXT"):
         cursor = self.conn.cursor()
         cursor.execute(f"PRAGMA table_info({table_name})")
