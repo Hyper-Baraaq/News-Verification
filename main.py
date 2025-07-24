@@ -222,6 +222,27 @@ def main():
         db_manager = DatabaseManager()
         progress_bar = st.progress(0)
         status_text = st.empty()
+
+        cached_result = db_manager.get_simple_cached_result(url_input)
+        if cached_result:
+            st.session_state.current_verification = cached_result
+            st.session_state.verification_history.append({
+                'url': url_input,
+                'score': cached_result.get('confidence_score'),
+                'timestamp': cached_result.get('timestamp', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            })
+            st.session_state.url_cache[url_input] = cached_result
+            progress_bar.progress(100)
+            status_text.text("✅ Loaded from cached result.")
+            time.sleep(0.5)
+            progress_bar.empty()
+            status_text.empty()
+            display_results(cached_result)
+            return
+    
+        # Proceed if not cached
+        progress_bar.progress(5)
+        status_text.text("🔍 Extracting content...")
         
         try:
             start_time = time.time()
