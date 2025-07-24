@@ -180,7 +180,15 @@ class DatabaseManager:
         row = cursor.fetchone()
         return row[0] if row else None
 
-    def insert_domain(self, domain: str, trust_score: float, category: str, source_type: str, bias_level: str, reliability: str, notes: str=""):
+    def insert_domain(
+    self,
+    domain: str,
+    trust_score: float,
+    category: str,
+    bias_level: str,
+    reliability: str,
+    notes: str = ""  
+):
         """Insert or update a domain in the domain_credibility table"""
         try:
             cursor = self.conn.cursor()
