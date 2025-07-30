@@ -1,8 +1,10 @@
 import openai
 import requests
 import re
+import json
 from typing import Tuple, Dict, Any, List
 from config import CONFIG
+from deep_research_extractor import generate_research_outputs
 
 class ContentAnalyzer:
     """Class to extract and analyze content using OpenAI and Perplexity APIs"""
@@ -195,6 +197,8 @@ class ContentAnalyzer:
                     'fact_verification': self._extract_fact_verification(analysis_content)
                 }
                 
+                
+
                 return True, analysis_data
             else:
                 return False, {"error": "No analysis results returned"}
@@ -266,3 +270,15 @@ class ContentAnalyzer:
                 assessment_lines.append(line.strip())
         
         return ' '.join(assessment_lines) or "Assessment not clearly stated"
+    
+    def analyze_content(self, article_text, source_url=None):
+        outputs = generate_research_outputs(article_text, source=source_url)
+        
+        # Save or log narrative
+        print("Narrative Context:\n", outputs["narrative_context"])
+
+        # Optional: Store to DB or write to file
+        with open("structured_output.json", "w", encoding="utf-8") as f:
+            json.dump(outputs["structured_granular_data"], f, indent=2)
+        
+        return outputs

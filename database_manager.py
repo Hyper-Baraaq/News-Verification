@@ -231,8 +231,9 @@ class DatabaseManager:
     category: str,
     bias_level: str,
     reliability: str,
+    source_type: str,
     notes: str = ""  
-):
+    ):
         """Insert or update a domain in the domain_credibility table"""
         try:
             cursor = self.conn.cursor()
@@ -240,21 +241,21 @@ class DatabaseManager:
             cursor.execute(
                 """
                 INSERT INTO domain_credibility (
-                    domain, trust_score, category, source_type, bias_level, reliability, notes,
+                    domain, trust_score, category, bias_level, reliability, source_type,notes,
                     created_at, updated_at, last_checked, is_active
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(domain) DO UPDATE SET
                     trust_score = excluded.trust_score,
                     category = excluded.category,
-                    source_type = excluded.source_type,
                     bias_level = excluded.bias_level,
                     reliability = excluded.reliability,
+                    source_type = excluded.source_type,
                     notes = excluded.notes,
                     updated_at = excluded.updated_at,
                     last_checked = excluded.last_checked
                 """,
                 (
-                    domain, trust_score, category, source_type, bias_level, reliability, notes,
+                    domain, trust_score, category, bias_level, reliability, source_type,notes,
                     now, now, now, 1
                 )
             )

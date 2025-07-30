@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import time
 from url_validator import URLValidator
 from content_scraper import ContentScraper
+from deep_research_extractor import generate_research_outputs
 from source_credibility_evaluator import SourceCredibilityEvaluator
 from content_analyzer import ContentAnalyzer
 from confidence_calculator import ConfidenceCalculator
@@ -151,7 +152,8 @@ def display_results(verification_result: Dict[str, Any]):
                         label="Extracted Text",
                         value=extracted[:1500] + "...",
                         height=300,
-                        label_visibility="collapsed"
+                        label_visibility="collapsed",
+                        disabled=True
                     )
 
                 else:
@@ -160,7 +162,8 @@ def display_results(verification_result: Dict[str, Any]):
                         label="Extracted Text",
                         value=extracted[:1500] + "...",
                         height=300,
-                        label_visibility="collapsed"
+                        label_visibility="collapsed",
+                        disabled=True
                     )
 
             else:
@@ -169,7 +172,8 @@ def display_results(verification_result: Dict[str, Any]):
                     label="Extracted Text",
                     value=extracted[:1500] + "...",
                     height=300,
-                    label_visibility="collapsed"
+                    label_visibility="collapsed",
+                    disabled=True
                 )
 
         
@@ -222,27 +226,6 @@ def main():
         db_manager = DatabaseManager()
         progress_bar = st.progress(0)
         status_text = st.empty()
-
-        cached_result = db_manager.get_simple_cached_result(url_input)
-        if cached_result:
-            st.session_state.current_verification = cached_result
-            st.session_state.verification_history.append({
-                'url': url_input,
-                'score': cached_result.get('confidence_score'),
-                'timestamp': cached_result.get('timestamp', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            })
-            st.session_state.url_cache[url_input] = cached_result
-            progress_bar.progress(100)
-            status_text.text("✅ Loaded from cached result.")
-            time.sleep(0.5)
-            progress_bar.empty()
-            status_text.empty()
-            display_results(cached_result)
-            return
-    
-        # Proceed if not cached
-        progress_bar.progress(5)
-        status_text.text("🔍 Extracting content...")
         
         try:
             start_time = time.time()
@@ -314,6 +297,9 @@ def main():
                 st.session_state.current_result = result
                 display_results(result)
                 return
+            parsed_url = urlparse(url_input)
+            source_type = parsed_url.netloc if parsed_url.netloc else "unknown"
+            result['source_type'] = source_type
             
             # Step 4: Fetch HTML
             status_text.text("📥 Fetching content...")
@@ -385,7 +371,7 @@ def main():
             notes = f"Automatically added domain based on analysis: {analysis_results.get('credibility_assessment', 'No assessment')}"
             db_manager.insert_domain(
                 domain, confidence_score, extracted_metadata.get('category', 'general'), 
-                extracted_metadata.get('bias_level', 'unknown'), extracted_metadata.get('reliability', 'unknown'), notes
+                extracted_metadata.get('bias_level', 'unknown'), extracted_metadata.get('reliability', 'unknown'), source_type,notes
             )
             
             # Update result
